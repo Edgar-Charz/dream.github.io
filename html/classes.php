@@ -434,14 +434,47 @@ if (isset($_POST['addClass'])) {
                                                                     <i class="bx bx-dots-vertical-rounded"></i>
                                                                 </button>
                                                                 <div class="dropdown-menu" style="width: 10%">
-                                                                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#teacherViewModal<?= $teacher_id ?>"> <i class="bx bx-show me-1"></i>View</button>
+                                                                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#classViewModal<?= $class_id ?>"> <i class="bx bx-show me-1"></i>View</button>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                     </tr>
 
                                                     <!-- Modal for Viewing teacher Details -->
-
+                                                    <div class="modal fade" id="classViewModal<?= $class_id ?>" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog modal-xl" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="exampleModalLabel4">Modal title</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col mb-6">
+                                                                            <label for="nameExLarge" class="form-label">Name</label>
+                                                                            <input type="text" id="nameExLarge" class="form-control" placeholder="Enter Name" />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row g-6">
+                                                                        <div class="col mb-0">
+                                                                            <label for="emailExLarge" class="form-label">Email</label>
+                                                                            <input type="email" id="emailExLarge" class="form-control" placeholder="xxxx@xxx.xx" />
+                                                                        </div>
+                                                                        <div class="col mb-0">
+                                                                            <label for="dobExLarge" class="form-label">DOB</label>
+                                                                            <input type="date" id="dobExLarge" class="form-control" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                                        Close
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
                                             <?php
                                                 }

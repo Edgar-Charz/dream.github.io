@@ -294,7 +294,7 @@ if (isset($_POST['addTeacher'])) {
             <div class="col-xl">
               <div class="card mb-6">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                  <h5 class="mb-0">Teacher's Information</h5>
+                  <h5 class="mb-0">Enrollments Information</h5>
                 </div>
                 <div class="card-body">
                   <form action="addTeacher.php" method="POST" enctype="multipart/form-data">

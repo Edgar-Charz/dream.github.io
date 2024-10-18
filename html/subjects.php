@@ -406,7 +406,7 @@ if (isset($_POST['addSubject'])) {
                                 <div class="card h-100">
                                     <div class="card-header d-flex justify-content-between">
                                         <div class="card-title mb-0">
-                                            <h5 class="mb-1 me-2">Top Classes With Most Students</h5>
+                                            <h5 class="mb-1 me-2">Top Subjects With Most Students</h5>
                                         </div>
                                     </div>
                                     <div class="card-body">
@@ -435,35 +435,36 @@ if (isset($_POST['addSubject'])) {
                                             </div>
                                         </div>
                                         <ul class="p-0 m-0">
-                                            <li class="d-flex align-items-center mb-5">
-                                                <div class="avatar flex-shrink-0 me-3">
-                                                    <span class="avatar-initial rounded bg-label-danger"><i class="bx bx-mobile-alt"></i></span>
-                                                </div>
-                                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <?php
-                                                    $topClassWithMostStudentsQuery = "SELECT classes.class_id, classes.class_name, COUNT(students.student_id) AS totalStudents
-                                                          FROM classes, students 
-                                                          WHERE classes.class_id = students.class_id
-                                                          GROUP BY classes.class_id, classes.class_name
+
+                                            <?php
+                                            $topSubjectWithMostStudentsQuery = "SELECT enrollments.subject_id, subjects.subject_name, COUNT(enrollments.student_id) AS totalStudents
+                                                          FROM enrollments, subjects, students
+                                                          WHERE enrollments.subject_id = subjects.subject_id AND enrollments.student_id = students.student_id                                                        
+                                                          GROUP BY enrollments.subject_id, subjects.subject_name
                                                           ORDER BY totalStudents DESC
                                                           LIMIT 4";
-                                                    $topClassWithMostStudentsQueryResult = $conn->query($topClassWithMostStudentsQuery);
-                                                    if (mysqli_num_rows($topClassWithMostStudentsQueryResult) > 0) {
-                                                        $index = 0;
-                                                        while ($row = mysqli_fetch_assoc($topClassWithMostStudentsQueryResult)) {
-                                                            echo '<div class="me-2"><h6 class="mb-0">' . $row['class_name'] . '</h6>';
-                                                            echo '<small>' . $row['class_id'] . '</small>';
-                                                            echo '</div>';
-                                                            echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalStudents'] . '</h6></div>';
-                                                            $index++;
-                                                        }
-                                                    } else {
-                                                        echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
-                                                        echo '<div class="user-progress"><h6 class="mb-0"> No Classes </h6></div>';
-                                                    }
+                                            $topSubjectWithMostStudentsQueryResult = $conn->query($topSubjectWithMostStudentsQuery);
+                                            if (mysqli_num_rows($topSubjectWithMostStudentsQueryResult) > 0) {
+                                                $index = 0;
+                                                while ($row = mysqli_fetch_assoc($topSubjectWithMostStudentsQueryResult)) {
+                                                    echo '<li class="d-flex align-items-center mb-5">';
+                                                    echo '<div class="avatar flex-shrink-0 me-3">';
+                                                    echo '<span class="avatar-initial rounded bg-label-danger"><i class="bx bx-mobile-alt"></i></span>';
                                                     echo '</div>';
-                                                    echo '</li>';
-                                                    ?>
+                                                    echo '<div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">';
+                                                    echo '<div class="me-2"><h6 class="mb-0">' . $row['subject_name'] . '</h6>';
+                                                    echo '<small>' . $row['subject_id'] . '</small>';
+                                                    echo '</div>';
+                                                    echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalStudents'] . '</h6></div>';
+                                                    $index++;
+                                                }
+                                            } else {
+                                                echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
+                                                echo '<div class="user-progress"><h6 class="mb-0"> No Subjects </h6></div>';
+                                            }
+                                            echo '</div>';
+                                            echo '</li>';
+                                            ?>
                                         </ul>
                                     </div>
                                 </div>
@@ -503,55 +504,55 @@ if (isset($_POST['addSubject'])) {
                                             </div>
                                         </div>
                                         <ul class="p-0 m-0">
-                                            <li class="d-flex align-items-center mb-5">
-                                                <div class="avatar flex-shrink-0 me-3">
-                                                    <span class="avatar-initial rounded bg-label-info"><i class="bx bx-home-alt"></i></span>
-                                                </div>
-                                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <?php
-                                                    $topSubjectWithMostTeachersQuery = "SELECT subjects.subject_id, subjects.subject_name, COUNT(teachers.teacher_id) AS totalTeachers
+                                            <?php
+                                            $topSubjectWithMostTeachersQuery = "SELECT subjects.subject_id, subjects.subject_name, COUNT(teachers.teacher_id) AS totalTeachers
                                                               FROM subjects, teachers 
                                                               WHERE subjects.subject_id = teachers.subject_id
                                                               GROUP BY subjects.subject_id, subjects.subject_name
                                                               ORDER BY totalTeachers DESC
                                                               LIMIT 4";
-                                                    $topSubjectWithMostTeachersQueryResult = $conn->query($topSubjectWithMostTeachersQuery);
-                                                    if (mysqli_num_rows($topSubjectWithMostTeachersQueryResult) > 0) {
-                                                        $index = 0;
-                                                        while ($row = mysqli_fetch_assoc($topSubjectWithMostTeachersQueryResult)) {
-                                                            echo '<div class="me-2"><h6 class="mb-0">' . $row['subject_name'] . '</h6>';
-                                                            echo '<small>' . $row['subject_id'] . '</small>';
-                                                            echo '</div>';
-                                                            echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalTeachers'] . '</h6></div>';
-                                                            $index++;
-                                                        }
-                                                    } else {
-                                                        echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
-                                                        echo '<div class="user-progress"><h6 class="mb-0"> No Subjects </h6></div>';
-                                                    }
-                                                    ?>
-                                                </div>
-                                            </li>
-
-                                        </ul>
+                                            $topSubjectWithMostTeachersQueryResult = $conn->query($topSubjectWithMostTeachersQuery);
+                                            if (mysqli_num_rows($topSubjectWithMostTeachersQueryResult) > 0) {
+                                                $index = 0;
+                                                while ($row = mysqli_fetch_assoc($topSubjectWithMostTeachersQueryResult)) {
+                                                    echo '<li class="d-flex align-items-center mb-5">';
+                                                    echo '<div class="avatar flex-shrink-0 me-3">';
+                                                    echo '<span class="avatar-initial rounded bg-label-info"><i class="bx bx-home-alt"></i></span>';
+                                                    echo '</div>';
+                                                    echo '<div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">';
+                                                    echo '<div class="me-2"><h6 class="mb-0">' . $row['subject_name'] . '</h6>';
+                                                    echo '<small>' . $row['subject_id'] . '</small>';
+                                                    echo '</div>';
+                                                    echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalTeachers'] . '</h6></div>';
+                                                    $index++;
+                                                }
+                                            } else {
+                                                echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
+                                                echo '<div class="user-progress"><h6 class="mb-0"> No Subjects </h6></div>';
+                                            }
+                                            ?>
                                     </div>
+                                    </li>
+
+                                    </ul>
                                 </div>
                             </div>
-                            <!--/ Expense Overview -->
+                        </div>
+                        <!--/ Expense Overview -->
 
-                            <!-- Transactions -->
-                            <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-6">
-                                <div class="card h-100">
-                                    <div class="card-header d-flex justify-content-between">
-                                        <div class="card-title mb-0">
-                                            <h5 class="mb-1 me-2">Top Classes With Most Students</h5>
-                                        </div>
+                        <!-- Transactions -->
+                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-6">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-title mb-0">
+                                        <h5 class="mb-1 me-2">Top Classes With Most Students</h5>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-6">
-                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                <?php
-                                                $topClassesStudentsCountQuery = "SELECT SUM(totalStudents) AS studentsCount
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-6">
+                                        <div class="d-flex flex-column align-items-center gap-1">
+                                            <?php
+                                            $topClassesStudentsCountQuery = "SELECT SUM(totalStudents) AS studentsCount
                                                           FROM (
                                                                 SELECT classes.class_id, classes.class_name, COUNT(students.student_id) AS totalStudents
                                                                    FROM students, classes
@@ -559,230 +560,230 @@ if (isset($_POST['addSubject'])) {
                                                                    GROUP BY classes.class_id, classes.class_name
                                                                    ORDER BY totalStudents DESC
                                                                    LIMIT 4) AS topClassStudents";
-                                                $topClassesStudentsCountQueryResult = $conn->query($topClassesStudentsCountQuery);
-                                                if (mysqli_num_rows($topClassesStudentsCountQueryResult) > 0) {
-                                                    while ($row = mysqli_fetch_array($topClassesStudentsCountQueryResult)) {
-                                                        echo '<h3 class="mb-1">' . $row['studentsCount'] . '</h3>';
-                                                        echo '<small>Total Students</small>';
-                                                    }
-                                                } else {
-                                                    echo '<h3 class="mb-1"> 0 </h3>';
-                                                    echo '<small>No Students</small>';
+                                            $topClassesStudentsCountQueryResult = $conn->query($topClassesStudentsCountQuery);
+                                            if (mysqli_num_rows($topClassesStudentsCountQueryResult) > 0) {
+                                                while ($row = mysqli_fetch_array($topClassesStudentsCountQueryResult)) {
+                                                    echo '<h3 class="mb-1">' . $row['studentsCount'] . '</h3>';
+                                                    echo '<small>Total Students</small>';
                                                 }
-                                                ?>
-                                            </div>
+                                            } else {
+                                                echo '<h3 class="mb-1"> 0 </h3>';
+                                                echo '<small>No Students</small>';
+                                            }
+                                            ?>
                                         </div>
-                                        <ul class="p-0 m-0">
-                                            <li class="d-flex align-items-center mb-5">
-                                                <div class="avatar flex-shrink-0 me-3">
-                                                    <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
-                                                </div>
-                                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <?php
-                                                    $topClassesWithMostStudentsCountQuery = "SELECT classes.class_id, classes.class_name, COUNT(students.student_id) AS totalStudents
+                                    </div>
+                                    <ul class="p-0 m-0">                                        
+                                                <?php
+                                                $topClassesWithMostStudentsCountQuery = "SELECT classes.class_id, classes.class_name, COUNT(students.student_id) AS totalStudents
                                                                    FROM students, classes
                                                                    WHERE classes.class_id = students.class_id
                                                                    GROUP BY classes.class_id, classes.class_name
                                                                    ORDER BY totalStudents DESC
                                                                    LIMIT 4";
 
-                                                    $topClassesWithMostStudentsCountQueryResult = $conn->query($topClassesWithMostStudentsCountQuery);
-                                                    if (mysqli_num_rows($topClassesWithMostStudentsCountQueryResult) > 0) {
-                                                        $index = 0;
-                                                        while ($row = mysqli_fetch_array($topClassesWithMostStudentsCountQueryResult)) {
-                                                            echo '<div class="me-2"><h6 class="mb-0">' . $row['class_name'] . '</h6>';
-                                                            echo '<small>' . $row['class_id'] . '</small>';
-                                                            echo '</div>';
-                                                            echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalStudents'] . '</h6></div>';
-                                                        }
-                                                    } else {
-                                                        echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
-                                                        echo '<div class="user-progress"><h6 class="mb-0">No Classes</h6></div>';
+                                                $topClassesWithMostStudentsCountQueryResult = $conn->query($topClassesWithMostStudentsCountQuery);
+                                                if (mysqli_num_rows($topClassesWithMostStudentsCountQueryResult) > 0) {
+                                                    $index = 0;
+                                                    while ($row = mysqli_fetch_array($topClassesWithMostStudentsCountQueryResult)) {
+                                                        echo '<li class="d-flex align-items-center mb-5">';
+                                                        echo '<div class="avatar flex-shrink-0 me-3">';
+                                                        echo '<span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>';
+                                                        echo '</div>';
+                                                        echo '<div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">';
+                                                        echo '<div class="me-2"><h6 class="mb-0">' . $row['class_name'] . '</h6>';
+                                                        echo '<small>' . $row['class_id'] . '</small>';
+                                                        echo '</div>';
+                                                        echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalStudents'] . '</h6></div>';
                                                     }
-                                                    ?>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                                } else {
+                                                    echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
+                                                    echo '<div class="user-progress"><h6 class="mb-0">No Classes</h6></div>';
+                                                }
+                                                ?>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                            <!--/ Transactions -->
                         </div>
-                        <div class="row">
-                            <!-- Hoverable Table rows -->
-                            <div class="card">
-                                <h5 class="card-header">Subjects</h5>
-                                <div class="table-responsive text-nowrap">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#addSubjectModal">
-                                        Add Subject
-                                    </button>
-                                    <table class="table table-dark" id="teachers">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>NO.</th>
-                                                <th>Subject ID</th>
-                                                <th>Subject Name</th>
-                                                <th>Description</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="table-border-bottom-0">
-                                            <?php
-                                            $subjectsQuery = "SELECT * 
+                        <!--/ Transactions -->
+                    </div>
+                    <div class="row">
+                        <!-- Hoverable Table rows -->
+                        <div class="card">
+                            <h5 class="card-header">Subjects</h5>
+                            <div class="table-responsive text-nowrap">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#addSubjectModal">
+                                    Add Subject
+                                </button>
+                                <table class="table table-dark" id="teachers">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>NO.</th>
+                                            <th>Subject ID</th>
+                                            <th>Subject Name</th>
+                                            <th>Description</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-border-bottom-0">
+                                        <?php
+                                        $subjectsQuery = "SELECT * 
                                                              FROM subjects";
-                                            $subjectsQueryResults = $conn->query($subjectsQuery);
-                                            $index = 0;
+                                        $subjectsQueryResults = $conn->query($subjectsQuery);
+                                        $index = 0;
 
-                                            if ($subjectsQueryResults->num_rows > 0) {
-                                                while ($row = mysqli_fetch_array($subjectsQueryResults)) {
-                                                    $index++;
-                                                    $subject_id = $row['subject_id'];
-                                            ?>
-                                                    <tr>
-                                                        <td><?= $index ?></td>
-                                                        <td><?= $row['subject_id'] ?></td>
-                                                        <td><?= $row['subject_name'] ?></td>
-                                                        <td><?= $row['subject_description'] ?></td>
-                                                        <td>
-                                                            <div class="dropdown">
-                                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                                                </button>
-                                                                <div class="dropdown-menu" style="width: 10%">
-                                                                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#subjectViewModal<?= $subject_id ?>"> <i class="bx bx-show me-1"></i>View</button>
-                                                                </div>
+                                        if ($subjectsQueryResults->num_rows > 0) {
+                                            while ($row = mysqli_fetch_array($subjectsQueryResults)) {
+                                                $index++;
+                                                $subject_id = $row['subject_id'];
+                                        ?>
+                                                <tr>
+                                                    <td><?= $index ?></td>
+                                                    <td><?= $row['subject_id'] ?></td>
+                                                    <td><?= $row['subject_name'] ?></td>
+                                                    <td><?= $row['subject_description'] ?></td>
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu" style="width: 10%">
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#subjectViewModal<?= $subject_id ?>"> <i class="bx bx-show me-1"></i>View</button>
                                                             </div>
-                                                        </td>
-                                                    </tr>
+                                                        </div>
+                                                    </td>
+                                                </tr>
 
-                                                    <!-- Modal for Viewing teacher Details -->
-                                                    <div class="modal fade" id="subjectViewModal<?= $subject_id ?>" tabindex="-1" aria-hidden="true">
-                                                        <div class="modal-dialog modal-xl" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" justify-content-center><u><span class="badge rounded-pill bg-primary"><?= ($row['subject_name']) ?></span></u></h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <!-- Fetch and display data based on teacherId -->
-                                                                    <?php
-                                                                    $subjectDetailsQuery = "SELECT *
+                                                <!-- Modal for Viewing teacher Details -->
+                                                <div class="modal fade" id="subjectViewModal<?= $subject_id ?>" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" justify-content-center><u><span class="badge rounded-pill bg-primary"><?= ($row['subject_name']) ?></span></u></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- Fetch and display data based on teacherId -->
+                                                                <?php
+                                                                $subjectDetailsQuery = "SELECT *
                                                                                             FROM subjects                                                                                           
                                                                                             WHERE subject_id = '$subject_id'";
 
-                                                                    $subjectDetailsQueryResult = $conn->query($subjectDetailsQuery);
+                                                                $subjectDetailsQueryResult = $conn->query($subjectDetailsQuery);
 
-                                                                    if ($subjectDetailsQueryResult->num_rows > 0) {
-                                                                        $subject = $subjectDetailsQueryResult->fetch_assoc();
-                                                                    ?>
+                                                                if ($subjectDetailsQueryResult->num_rows > 0) {
+                                                                    $subject = $subjectDetailsQueryResult->fetch_assoc();
+                                                                ?>
 
-                                                                        <form role="form">
-                                                                            <h5><span class="badge bg-label-primary">SUBJECT DETAILS:</span></h5>
+                                                                    <form role="form">
+                                                                        <h5><span class="badge bg-label-primary">SUBJECT DETAILS:</span></h5>
 
-                                                                            <div class="row g-6">
-                                                                                <div class="col-md-6">
-                                                                                    <label class="control-label">Name:</label>
-                                                                                    <p class="form-control"><?= ($subject['subject_name']) ?></p>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <label class="control-label">ID:</label>
-                                                                                    <p class="form-control"><?= ($subject['subject_id']) ?></p>
-                                                                                </div>
+                                                                        <div class="row g-6">
+                                                                            <div class="col-md-6">
+                                                                                <label class="control-label">Name:</label>
+                                                                                <p class="form-control"><?= ($subject['subject_name']) ?></p>
                                                                             </div>
-                                                                        </form>
-                                                                    <?php
-                                                                    } else {
-                                                                        echo "No Teacher details found.";
-                                                                    }
-                                                                    ?>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                                            <div class="col-md-6">
+                                                                                <label class="control-label">ID:</label>
+                                                                                <p class="form-control"><?= ($subject['subject_id']) ?></p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                <?php
+                                                                } else {
+                                                                    echo "No Teacher details found.";
+                                                                }
+                                                                ?>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                                <div class="modal fade" id="addSubjectModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered"" role=" document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel4">Subject Information</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form role="form" action="subjects.php" method="POST" enctype="multipart/form-data">
+                                                    <div class="row g-6">
+                                                        <div class="col mb-0">
+                                                            <label class="form-label">Subject Name</label>
+                                                            <div class="input-group input-group-merge">
+                                                                <span class="input-group-text"><i class="bx bx-user"></i></span>
+                                                                <input type="text" class="form-control" id="subjectName" name="subjectName" placeholder="Subject Name" oninput="convertToUpperCase(this)" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row g-6">
+                                                            <div class="col mb-0">
+                                                                <label class="form-label">Description</label>
+                                                                <div class=" input-group input-group-merge">
+                                                                    <span class="input-group-text"><i class="bx bx-user"></i></span>
+                                                                    <input type="text" class="form-control" id="subjectDescription" name="subjectDescription" placeholder="Description" oninput="convertToUpperCase(this)" required />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                            <?php
-                                                }
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                    <div class="modal fade" id="addSubjectModal" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered"" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel4">Subject Information</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form role="form" action="subjects.php" method="POST" enctype="multipart/form-data">
-                                                        <div class="row g-6">
-                                                            <div class="col mb-0">
-                                                                <label class="form-label">Subject Name</label>
-                                                                <div class="input-group input-group-merge">
-                                                                    <span class="input-group-text"><i class="bx bx-user"></i></span>
-                                                                    <input type="text" class="form-control" id="subjectName" name="subjectName" placeholder="Subject Name" oninput="convertToUpperCase(this)" required />
-                                                                </div>
-                                                            </div>
-                                                            <div class="row g-6">
-                                                                <div class="col mb-0">
-                                                                    <label class="form-label">Description</label>
-                                                                    <div class=" input-group input-group-merge">
-                                                                        <span class="input-group-text"><i class="bx bx-user"></i></span>
-                                                                        <input type="text" class="form-control" id="subjectDescription" name="subjectDescription" placeholder="Description" oninput="convertToUpperCase(this)" required />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <button type="submit" class="btn btn-primary" name="addSubject">Submit</button>
-                                                    </form>
-                                                </div>
+                                                    <br>
+                                                    <button type="submit" class="btn btn-primary" name="addSubject">Submit</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination justify-content-center" id="pagination">
-
-                                    </ul>
-                                </nav>
                             </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center" id="pagination">
+
+                                </ul>
+                            </nav>
                         </div>
                     </div>
-                    <!-- / Content -->
-
-                    <!-- Footer -->
-                    <footer class="content-footer footer bg-footer-theme">
-                        <div class="container-xxl">
-                            <div
-                                class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
-                                <div class="text-body">
-                                    ©
-                                    <script>
-                                        document.write(new Date().getFullYear());
-                                    </script>
-                                    , made with ❤️ by
-                                    <a href="https://themeselection.com" target="_blank" class="footer-link">ThemeSelection</a>
-                                </div>
-
-                            </div>
-                        </div>
-                    </footer>
-                    <!-- / Footer -->
-
-                    <div class="content-backdrop fade"></div>
                 </div>
-                <!-- Content wrapper -->
-            </div>
-            <!-- / Layout page -->
-        </div>
+                <!-- / Content -->
 
-        <!-- Overlay -->
-        <div class="layout-overlay layout-menu-toggle"></div>
+                <!-- Footer -->
+                <footer class="content-footer footer bg-footer-theme">
+                    <div class="container-xxl">
+                        <div
+                            class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+                            <div class="text-body">
+                                ©
+                                <script>
+                                    document.write(new Date().getFullYear());
+                                </script>
+                                , made with ❤️ by
+                                <a href="https://themeselection.com" target="_blank" class="footer-link">ThemeSelection</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </footer>
+                <!-- / Footer -->
+
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
     </div>
     <!-- / Layout wrapper -->
 

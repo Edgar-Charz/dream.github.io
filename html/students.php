@@ -26,6 +26,8 @@ if (isset($_POST['addStudent'])) {
     $email = $conn->real_escape_string($_POST['student_email']);
     $address = $conn->real_escape_string($_POST['student_address']);
 
+    $subjectIds = $_POST['enrollSubjects'];
+
     $checkingStudent = "SELECT * FROM students WHERE students.student_fullname = '$fullName' ";
     $result = $conn->query($checkingStudent);
     if ($result->num_rows > 0) {
@@ -45,13 +47,19 @@ if (isset($_POST['addStudent'])) {
                 VALUES ('$class', '$firstName', '$middleName', '$lastName', '$fullName', '$dob', '$gender', '$address', '$phoneNumber', '$email',  '$currentTime')";
 
         if ($conn->query($studentsQuery) === TRUE) {
-            $student_id = $conn->insert_id;            
+            $student_id = $conn->insert_id;
 
-            $parentsQuery = "INSERT INTO `parents` (`student_id`, `parent_first`, `parent_last`, `parent_fullname`, `relationship`, `parent_phone_number`, `parent_email`, `address`)
+            foreach ($subjectIds as $subject_id) {
+                $enrollQuery = "INSERT INTO enrollments (student_id, subject_id, class_id, enrollment_date) 
+                                VALUES ('$student_id', '$subject_id', '$class', '$currentTime')";
+
+                if ($conn->query($enrollQuery) === TRUE) {
+
+                    $parentsQuery = "INSERT INTO `parents` (`student_id`, `parent_first`, `parent_last`, `parent_fullname`, `relationship`, `parent_phone_number`, `parent_email`, `address`)
                   VALUES('$student_id', '$parentFirstname', '$parentLastname', '$parentFullname', '$relationship', '$phoneNumber', '$email', '$address') ";
 
-            if ($conn->query($parentsQuery) === TRUE) {
-                echo "<script>
+                    if ($conn->query($parentsQuery) === TRUE) {
+                        echo "<script>
         document.addEventListener('DOMContentLoaded', function () {
          Swal.fire({
                     title: 'Success!!',
@@ -61,8 +69,19 @@ if (isset($_POST['addStudent'])) {
                 });
               });
           </script>";
-            } else {
-                echo "<script>
+                    } else {
+                        echo "<script>
+                document.addEventListener('DOMContentLoaded', function () {
+                 Swal.fire({
+                            title: 'Ooops!!',
+                            text: 'There was an error inserting enrollments!',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                      });
+                  </script>";
+                    } {
+                        echo "<script>
         document.addEventListener('DOMContentLoaded', function () {
          Swal.fire({
                     title: 'Ooops!!',
@@ -72,9 +91,9 @@ if (isset($_POST['addStudent'])) {
                 });
               });
           </script>";
-            }
-        } else {
-            echo "<script>
+                    }
+                } else {
+                    echo "<script>
         document.addEventListener('DOMContentLoaded', function () {
          Swal.fire({
                     title: 'Ooops!!',
@@ -84,6 +103,8 @@ if (isset($_POST['addStudent'])) {
                 });
               });
           </script>";
+                }
+            }
         }
     }
 }
@@ -338,17 +359,14 @@ if (isset($_POST['addStudent'])) {
                                         <div class="card h-100">
                                             <div class="card-body">
                                                 <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                                    <div class="avatar flex-shrink-0">
-                                                        <img
-                                                            src="../assets/img/icons/unicons/chart-success.png"
-                                                            alt="chart success"
-                                                            class="rounded" />
+                                                    <div class="spinner-grow text-danger" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
                                                     </div>
                                                 </div>
                                                 <h4>Teachers</h4>
                                                 <?php
                                                 $totalTeachersQuery = "SELECT * 
-                          FROM teachers";
+                                                                        FROM teachers";
                                                 $totalTeachersQueryResults = $conn->query($totalTeachersQuery);
                                                 if ($totalTeachers = mysqli_num_rows($totalTeachersQueryResults)) {
                                                     echo '<h4 class="card-title mb-3">' . $totalTeachers . '</h4> ';
@@ -554,6 +572,25 @@ if (isset($_POST['addStudent'])) {
                                                                     ?>
                                                                 </select>
                                                             </div>
+                                                            <div class="col-md-4">
+                                                                <label for="subjectIds" class="form-label">Enrolled Subjects</label>
+                                                                <select class="form-select" name="enrollSubjects[]" multiple required>
+                                                                    <option value="">--- Select Subjects ---</option>
+                                                                    <?php
+                                                                    require_once 'db_connection.php';
+                                                                    $subjectQuery = "SELECT * FROM subjects";
+                                                                    $subjectQueryResult = $conn->query($subjectQuery);
+                                                                    if (mysqli_num_rows($subjectQueryResult) > 0) {
+                                                                        while ($subject = mysqli_fetch_assoc($subjectQueryResult)) {
+                                                                            echo "<option value='" . $subject['subject_id'] . "'>" . $subject['subject_name'] . "</option>";
+                                                                        }
+                                                                    } else {
+                                                                        echo "<option>No Subject available</option>";
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                                <div class="form-text">Hold down the Ctrl or Command button to select multple options</div>
+                                                            </div>
                                                         </div>
                                                         <br>
                                                         <h5 class="modal-title">Parent's Details</h5>
@@ -578,6 +615,7 @@ if (isset($_POST['addStudent'])) {
                                                                 <div class=" input-group input-group-merge">
                                                                     <span class="input-group-text"><i class="bx bx-user"></i></span>
                                                                     <select class="form-control" name="parent_student_relationship" id="parent_student_relationship">
+                                                                        <option value="">--Select--</option>
                                                                         <option value="1">MOTHER</option>
                                                                         <option value="2">FATHER</option>
                                                                     </select>
