@@ -348,11 +348,13 @@ if (isset($_POST['addTeacher'])) {
                         </div>
                         <h4>Classes</h4>
                         <?php
-                        $totalClassesQuery = "SELECT * 
-                                                FROM classes";
+                        $totalClassesQuery = "SELECT COUNT(*) AS totalClasses 
+                                                                      FROM classes";
                         $totalClassesQueryResult = $conn->query($totalClassesQuery);
-                        if ($totalClasses = mysqli_num_rows($totalClassesQueryResult) > 0) {
-                          echo  '<h4 class="card-title mb-3">' . $totalClasses . '</h4>';
+                        if (mysqli_num_rows($totalClassesQueryResult) > 0) {
+                          while ($row = mysqli_fetch_assoc($totalClassesQueryResult)) {
+                            echo  '<h4 class="card-title mb-3">' . $row['totalClasses'] . '</h4>';
+                          }
                         } else {
                           echo '<h4 class="card-title mb-3"> 0 </h4>';
                         }

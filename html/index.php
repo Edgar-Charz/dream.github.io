@@ -287,7 +287,7 @@ include_once("db_connection.php");
                         $totalStudentsQuery = "SELECT * 
                           FROM students";
                         $totalStudentsQueryResults = $conn->query($totalStudentsQuery);
-                        if ($totalStudents = mysqli_num_rows($totalStudentsQueryResults)) {
+                        if ($totalStudents = mysqli_num_rows($totalStudentsQueryResults) > 0) {
                           echo '<h4 class="card-title mb-3">' . $totalStudents . '</h4> ';
                         } else {
                           echo '<h4 class="card-title mb-3"> 0 </h4> ';
@@ -309,11 +309,13 @@ include_once("db_connection.php");
                         </div>
                         <h4>Classes</h4>
                         <?php
-                        $totalClassesQuery = "SELECT * 
-                                                FROM classes";
+                        $totalClassesQuery = "SELECT COUNT(*) AS totalClasses 
+                                                                      FROM classes";
                         $totalClassesQueryResult = $conn->query($totalClassesQuery);
-                        if ($totalClasses = mysqli_num_rows($totalClassesQueryResult) > 0) {
-                          echo  '<h4 class="card-title mb-3">' . $totalClasses . '</h4>';
+                        if (mysqli_num_rows($totalClassesQueryResult) > 0) {
+                          while ($row = mysqli_fetch_assoc($totalClassesQueryResult)) {
+                            echo  '<h4 class="card-title mb-3">' . $row['totalClasses'] . '</h4>';
+                          }
                         } else {
                           echo '<h4 class="card-title mb-3"> 0 </h4>';
                         }
@@ -575,68 +577,68 @@ include_once("db_connection.php");
                     </div>
                   </div>
                   <ul class="p-0 m-0">
-                        <?php
-                        $topClassesWithMostStudentsCountQuery = "SELECT classes.class_id, classes.class_name, COUNT(students.student_id) AS totalStudents
+                    <?php
+                    $topClassesWithMostStudentsCountQuery = "SELECT classes.class_id, classes.class_name, COUNT(students.student_id) AS totalStudents
                                                                    FROM students, classes
                                                                    WHERE classes.class_id = students.class_id
                                                                    GROUP BY classes.class_id, classes.class_name
                                                                    ORDER BY totalStudents DESC
                                                                    LIMIT 4";
 
-                        $topClassesWithMostStudentsCountQueryResult = $conn->query($topClassesWithMostStudentsCountQuery);
-                        if (mysqli_num_rows($topClassesWithMostStudentsCountQueryResult) > 0) {
-                          $index = 0;
-                          while ($row = mysqli_fetch_array($topClassesWithMostStudentsCountQueryResult)) {
-                            echo '<li class="d-flex align-items-center mb-5">';
-                            echo '<div class="avatar flex-shrink-0 me-3">';
-                            echo '<span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>';
-                            echo '</div>';
-                            echo '<div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">';
-                            echo '<div class="me-2"><h6 class="mb-0">' . $row['class_name'] . '</h6>';
-                            echo '<small>' . $row['class_id'] . '</small>';
-                            echo '</div>';
-                            echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalStudents'] . '</h6></div>';
-                          }
-                        } else {
-                          echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
-                          echo '<div class="user-progress"><h6 class="mb-0">No Classes</h6></div>';
-                        }
-                        ?>
-                      </div>
-                    </li>
-                  </ul>
+                    $topClassesWithMostStudentsCountQueryResult = $conn->query($topClassesWithMostStudentsCountQuery);
+                    if (mysqli_num_rows($topClassesWithMostStudentsCountQueryResult) > 0) {
+                      $index = 0;
+                      while ($row = mysqli_fetch_array($topClassesWithMostStudentsCountQueryResult)) {
+                        echo '<li class="d-flex align-items-center mb-5">';
+                        echo '<div class="avatar flex-shrink-0 me-3">';
+                        echo '<span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>';
+                        echo '</div>';
+                        echo '<div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">';
+                        echo '<div class="me-2"><h6 class="mb-0">' . $row['class_name'] . '</h6>';
+                        echo '<small>' . $row['class_id'] . '</small>';
+                        echo '</div>';
+                        echo '<div class="user-progress"><h6 class="mb-0">' . $row['totalStudents'] . '</h6></div>';
+                      }
+                    } else {
+                      echo '<div class="me-2"><h6 class="mb-0"> 0 </h6></div>';
+                      echo '<div class="user-progress"><h6 class="mb-0">No Classes</h6></div>';
+                    }
+                    ?>
                 </div>
+                </li>
+                </ul>
               </div>
             </div>
-            <!--/ Transactions -->
+          </div>
+          <!--/ Transactions -->
+        </div>
+      </div>
+      <!-- / Content -->
+
+      <!-- Footer -->
+      <footer class="content-footer footer bg-footer-theme">
+        <div class="container-xxl">
+          <div
+            class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+            <div class="text-body">
+              ©
+              <script>
+                document.write(new Date().getFullYear());
+              </script>
+              , made with ❤️ by
+              <a href="https://themeselection.com" target="_blank" class="footer-link">ThemeSelection</a>
+            </div>
+
           </div>
         </div>
-        <!-- / Content -->
+      </footer>
+      <!-- / Footer -->
 
-        <!-- Footer -->
-        <footer class="content-footer footer bg-footer-theme">
-          <div class="container-xxl">
-            <div
-              class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
-              <div class="text-body">
-                ©
-                <script>
-                  document.write(new Date().getFullYear());
-                </script>
-                , made with ❤️ by
-                <a href="https://themeselection.com" target="_blank" class="footer-link">ThemeSelection</a>
-              </div>
-
-            </div>
-          </div>
-        </footer>
-        <!-- / Footer -->
-
-        <div class="content-backdrop fade"></div>
-      </div>
-      <!-- Content wrapper -->
+      <div class="content-backdrop fade"></div>
     </div>
-    <!-- / Layout page -->
+    <!-- Content wrapper -->
+  </div>
+  <!-- / Layout page -->
   </div>
 
   <!-- Overlay -->

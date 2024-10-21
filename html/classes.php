@@ -105,6 +105,42 @@ if (isset($_POST['addClass'])) {
     <!-- Helpers -->
     <script src="../assets/vendor/js/helpers.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <style>
+        /* Custom styling for dropdown */
+        .dropdown {
+            position: relative;
+            /* Ensure dropdown is positioned relative to its container */
+        }
+
+        .dropdown-menu {
+            display: none;
+            /* Hide dropdown by default */
+            position: absolute;
+            /* Position it relative to the .dropdown container */
+            top: 100%;
+            /* Position it below the input field */
+            left: 0;
+            width: 15%;
+            /* Make dropdown as wide as the search input */
+            overflow-y: auto;
+            /* Scroll if content overflows */
+            z-index: 1000;
+            /* Ensure dropdown is above other content */
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            /* Show dropdown when needed */
+        }
+
+        .dropdown-item {
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #ddd;
+        }
+    </style>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../assets/js/config.js"></script>
@@ -216,6 +252,16 @@ if (isset($_POST['addClass'])) {
 
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                         <!-- Search -->
+                        <?php
+                        $sql = "SELECT class_name FROM classes";
+                        $result = $conn->query($sql);
+                        $classes = [];
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                $classes[] = $row['class_name'];
+                            }
+                        }
+                        ?>
                         <div class="navbar-nav align-items-center">
                             <div class="nav-item d-flex align-items-center">
                                 <i class="bx bx-search bx-md"></i>
@@ -223,7 +269,10 @@ if (isset($_POST['addClass'])) {
                                     type="text"
                                     class="form-control border-0 shadow-none ps-1 ps-sm-2"
                                     placeholder="Search..."
-                                    aria-label="Search..." />
+                                    aria-label="Search..."
+                                    id="classSearch"
+                                    onkeyup="filterClasses()" />
+                                <div id="dropdown-content" class="dropdown-menu"></div>
                             </div>
                         </div>
                         <!-- /Search -->
@@ -341,11 +390,13 @@ if (isset($_POST['addClass'])) {
                                                 </div>
                                                 <h4>Classes</h4>
                                                 <?php
-                                                $totalClassesQuery = "SELECT * 
-                                                FROM classes";
+                                                $totalClassesQuery = "SELECT COUNT(*) AS totalClasses 
+                                                                      FROM classes";
                                                 $totalClassesQueryResult = $conn->query($totalClassesQuery);
-                                                if ($totalClasses = mysqli_num_rows($totalClassesQueryResult) > 0) {
-                                                    echo  '<h4 class="card-title mb-3">' . $totalClasses . '</h4>';
+                                                if (mysqli_num_rows($totalClassesQueryResult) > 0) {
+                                                    while ($row = mysqli_fetch_assoc($totalClassesQueryResult)) {
+                                                        echo  '<h4 class="card-title mb-3">' . $row['totalClasses'] . '</h4>';
+                                                    }
                                                 } else {
                                                     echo '<h4 class="card-title mb-3"> 0 </h4>';
                                                 }
@@ -587,6 +638,40 @@ if (isset($_POST['addClass'])) {
             input.value = input.value.toUpperCase();
         }
     </script>
+
+    <!-- script for Classes -->
+    <script>
+        // All classes are fetched once and stored in this array
+        const classes = <?php echo json_encode($classes); ?>;
+
+        // Function to filter classess based on input
+        function filterClasses() {
+            const searchQuery = document.getElementById('classSearch').value.toLowerCase();
+            const dropdown = document.getElementById('dropdown-content');
+            dropdown.innerHTML = ''; // Clear current results
+
+            if (searchQuery.length > 0) {
+                const filteredClasses = classes.filter(function(darasa) {
+                    return darasa.toLowerCase().includes(searchQuery);
+                });
+
+                filteredClasses.forEach(function(darasa) {
+                    const div = document.createElement('div');
+                    div.classList.add('dropdown-item');
+                    div.textContent = darasa;
+                    div.onclick = function() {
+                        window.location.href = 'classDetails.php?darasa=' + encodeURIComponent(darasa);
+                    };
+                    dropdown.appendChild(div);
+                });
+
+                dropdown.classList.add('show'); // Show dropdown if results are found
+            } else {
+                dropdown.classList.remove('show'); // Hide dropdown if input is empty
+            }
+        }
+    </script>
+
     <script src="../assets/vendor/libs/jquery/jquery.js"></script>
     <script src="../assets/vendor/libs/popper/popper.js"></script>
     <script src="../assets/vendor/js/bootstrap.js"></script>

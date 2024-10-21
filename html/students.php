@@ -391,11 +391,13 @@ if (isset($_POST['addStudent'])) {
                                                 </div>
                                                 <h4>Classes</h4>
                                                 <?php
-                                                $totalClassesQuery = "SELECT * 
-                                                FROM classes";
+                                                $totalClassesQuery = "SELECT COUNT(*) AS totalClasses 
+                                                                      FROM classes";
                                                 $totalClassesQueryResult = $conn->query($totalClassesQuery);
-                                                if ($totalClasses = mysqli_num_rows($totalClassesQueryResult) > 0) {
-                                                    echo  '<h4 class="card-title mb-3">' . $totalClasses . '</h4>';
+                                                if (mysqli_num_rows($totalClassesQueryResult) > 0) {
+                                                    while ($row = mysqli_fetch_assoc($totalClassesQueryResult)) {
+                                                        echo  '<h4 class="card-title mb-3">' . $row['totalClasses'] . '</h4>';
+                                                    }
                                                 } else {
                                                     echo '<h4 class="card-title mb-3"> 0 </h4>';
                                                 }
@@ -453,7 +455,7 @@ if (isset($_POST['addStudent'])) {
                                                 <th>Class</th>
                                                 <th>Address</th>
                                                 <th>Phone No</th>
-                                                <th>E-mail</th>
+                                                <!-- <th>E-mail</th> -->
                                                 <th>Enrollment Date</th>
                                                 <th>Action</th>
                                             </tr>
@@ -461,10 +463,10 @@ if (isset($_POST['addStudent'])) {
                                         <tbody class="table-border-bottom-0">
                                             <?php
                                             $studentsQuery = "SELECT students.*, classes.class_name  
-                            FROM students, classes
-                            WHERE students.class_id = classes.class_id
-                            GROUP BY students.student_id
-                            ORDER BY students.student_id ASC";
+                                                                FROM students, classes
+                                                                WHERE students.class_id = classes.class_id
+                                                                GROUP BY students.student_id
+                                                                ORDER BY students.student_id ASC";
                                             $studentsQueryResults = $conn->query($studentsQuery);
                                             $index = 0;
 
@@ -487,7 +489,7 @@ if (isset($_POST['addStudent'])) {
                                                         <td><?= ($row['class_name']) ?></td>
                                                         <td><?= ($row['address']) ?></td>
                                                         <td><?= ($row['phone_number']) ?></td>
-                                                        <td><?= ($row['email']) ?></td>
+                                                        <!-- <td><?= ($row['email']) ?></td> -->
                                                         <td><?= ($row['enrollment_date']) ?></td>
                                                         <td>
                                                             <div class="dropdown">
